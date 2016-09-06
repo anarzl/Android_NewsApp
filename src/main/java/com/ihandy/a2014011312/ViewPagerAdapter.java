@@ -48,6 +48,8 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter
         if(c.getCount() <= 0)
             unwatchedIsEmpty = true;
 
+        //db.delete("news",null,null);
+
         if(watchedIsEmpty && unwatchedIsEmpty)
         {
 

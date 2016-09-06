@@ -16,6 +16,11 @@
             android:icon="@mipmap/about_me"
             android:title="About Me" />
 
+        <item
+            android:id="@+id/nav_clean"
+            android:icon="@mipmap/garbage7"
+            android:title="Clear the Cache" />
+
 
     </group>
 

@@ -35,6 +35,8 @@ public class MainActivity extends AppCompatActivity
 
         db = DBHelper.getInstance(this);
 
+ //       db.delete("news","news_title = ?", new String[]{"from internet"});
+
         try
         {
             db.execSQL("CREATE TABLE IF NOT EXISTS watched(_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -160,6 +162,11 @@ public class MainActivity extends AppCompatActivity
         else if (id == R.id.nav_about)
         {
             Intent intent = new Intent(getBaseContext(),AboutActivity.class);
+            startActivity(intent);
+        }
+        else if (id == R.id.nav_clean)
+        {
+            Intent intent = new Intent(getBaseContext(),CleanActivity.class);
             startActivity(intent);
         }
 

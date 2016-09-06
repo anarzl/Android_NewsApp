@@ -26,6 +26,7 @@
         <activity android:name=".AboutActivity" />
         <activity android:name=".FavouriteActivity" />
         <activity android:name=".CMActivity" />
+        <activity android:name=".CleanActivity" />
     </application>
 
 </manifest>

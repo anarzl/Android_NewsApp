@@ -70,6 +70,7 @@ public class ListAdapter extends BaseAdapter
         ImageLoader.getInstance().displayImage(mNews.get(position).getImageUrl(), viewHolder.item_pic, getDisplayOption());
         viewHolder.txt_item_title.setText(mNews.get(position).getTitle());
         viewHolder.txt_item_origin.setText(mNews.get(position).getOrigin());
+        //viewHolder.txt_item_origin.setText(""+mNews.get(position).getId());
         return convertView;
     }
 
