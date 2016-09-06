@@ -3,7 +3,11 @@ package com.ihandy.a2014011312;
 /**
  * Created by weixy on 2016/9/2.
  */
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -29,9 +33,11 @@ public class TabFragment extends Fragment implements AdapterView.OnItemClickList
 {
     private String newsKind;
     private ListView newslist;
-    private FragmentManager fManager;
+ //   private DBHelper helper;
     private ArrayList<News> datas = new ArrayList<>();
     public static final String ARGS_PAGE = "args_page";
+
+    private SQLiteDatabase db;
 
     public static TabFragment getInstance(String k)
     {
@@ -48,6 +54,19 @@ public class TabFragment extends Fragment implements AdapterView.OnItemClickList
         super.onCreate(savedInstanceState);
         newsKind = getArguments().getString(ARGS_PAGE);
 
+        db = DBHelper.getInstance(getActivity());
+
+        try
+        {
+            db.execSQL("CREATE TABLE IF NOT EXISTS favourites(_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "category TEXT, news_title TEXT, news_origin TEXT, news_content_url TEXT, Image_url TEXT, news_id INTEGER)");
+
+        }
+        catch (Exception e)
+        {
+            Log.d("nani create database","fail");
+            e.printStackTrace();
+        }
 
         Thread getJSONThread = new Thread(new Runnable()
         {
@@ -69,12 +88,10 @@ public class TabFragment extends Fragment implements AdapterView.OnItemClickList
                 }
                 catch (IOException e)
                 {
-                    datas.add(new News("2","22"));
                     e.printStackTrace();
                 }
                 catch (Exception e)
                 {
-                    datas.add(new News("1","11"));
                     e.printStackTrace();
                 }
                 try
@@ -105,7 +122,6 @@ public class TabFragment extends Fragment implements AdapterView.OnItemClickList
                 }
                 catch (JSONException e)
                 {
-                    datas.add(new News("3","33"));
                     e.printStackTrace();
                 }
             }
@@ -117,15 +133,50 @@ public class TabFragment extends Fragment implements AdapterView.OnItemClickList
         }
         catch(Exception e)
         {
-            datas.add(new News("4","44"));
             e.printStackTrace();
         }
 
+        if(datas.size() == 0)
+        {
+            //从数据库中获取新闻
+            Cursor c = db.query ("news",null,null,null,null,null,null);
+            while(c.moveToNext())
+            {
+                if(newsKind.equals(c.getString(c.getColumnIndex("category"))))
+                {
+                    News newtmp = new News();
+
+                    newtmp.setTitle(c.getString(c.getColumnIndex("news_title")));
+                    newtmp.setOrigin(c.getString(c.getColumnIndex("news_origin")));
+                    newtmp.setContent(c.getString(c.getColumnIndex("news_content_url")));
+                    newtmp.setImageUrl(c.getString(c.getColumnIndex("Image_url")));
+                    newtmp.setId(c.getLong(c.getColumnIndex("news_id")));
+
+                    datas.add(newtmp);
+                }
+            }
+        }
+        else
+        {
+            //存入数据库
+            for(int i=0;i<datas.size();i++)
+            {
+                ContentValues cValue = new ContentValues();
+
+                cValue.put("category",newsKind);
+                cValue.put("news_title",datas.get(i).getTitle());
+                cValue.put("news_origin",datas.get(i).getOrigin());
+                cValue.put("news_content_url",datas.get(i).getContent());
+                cValue.put("Image_url",datas.get(i).getImageUrl());
+                cValue.put("news_id",datas.get(i).getId());
+
+                db.insert("news",null,cValue);
+            }
+        }
 
 
-
-        News new1 = new News("title "+newsKind,"content "+newsKind);
-        datas.add(new1);
+//        News new1 = new News("title "+newsKind,"content "+newsKind);
+//        datas.add(new1);
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -140,23 +191,12 @@ public class TabFragment extends Fragment implements AdapterView.OnItemClickList
     }
     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
     {
-//        FragmentTransaction fTransaction = fManager.beginTransaction();
-//        NewContentFragment ncFragment = new NewContentFragment();
-//        Bundle bd = new Bundle();
-//        bd.putString("content", datas.get(position).getContent());
-//        ncFragment.setArguments(bd);
-//        //获取Activity的控件
-//        TextView txt_title = (TextView) getActivity().findViewById(R.id.txt_title);
-//        txt_title.setText(datas.get(position).getContent());
-//        //加上Fragment替换动画
-//        fTransaction.setCustomAnimations(R.anim.fragment_slide_left_enter, R.anim.fragment_slide_left_exit);
-//        fTransaction.replace(R.id.tabs, ncFragment);
-//        //调用addToBackStack将Fragment添加到栈中
-//        fTransaction.addToBackStack(null);
-//        fTransaction.commit();
-
         Intent intent = new Intent(getActivity(),NewsActivity.class);
         intent.putExtra("newsUrl",datas.get(position).getContent());
+        intent.putExtra("newsTitle",datas.get(position).getTitle());
+        intent.putExtra("newsOrigin",datas.get(position).getOrigin());
+        intent.putExtra("newsImage",datas.get(position).getImageUrl());
+//        intent.putExtra("newsId",datas.get(position).getId());
         startActivity(intent);
     }
 }

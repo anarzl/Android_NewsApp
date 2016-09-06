@@ -13,6 +13,7 @@ public class News
     private String news_origin;
     private String news_content_url;
     private String Image_url;
+    private long news_id;
 
     public News(){}
 
@@ -22,8 +23,10 @@ public class News
         {
             news_title = dataJson.getString("title");
             news_origin = dataJson.getString("origin");
+            news_id = dataJson.getLong("news_id");
             JSONObject jsonSource = dataJson.optJSONObject("source");
-            news_content_url = jsonSource.getString("url");
+            if(jsonSource != null )
+                news_content_url = jsonSource.getString("url");
             JSONArray jsonArrayImages = dataJson.optJSONArray("imgs");
             if(jsonArrayImages.length() > 0)
             {
@@ -58,6 +61,11 @@ public class News
         return news_origin;
     }
 
+    public long getId()
+    {
+        return news_id;
+    }
+
     public String getImageUrl()
     {
         return Image_url;
@@ -68,9 +76,24 @@ public class News
         return news_content_url;
     }
 
+    public void setOrigin(String new_origin)
+    {
+        this.news_origin = new_origin;
+    }
+
     public void setTitle(String new_title)
     {
         this.news_title = new_title;
+    }
+
+    public void setImageUrl(String img_url)
+    {
+        this.Image_url = img_url;
+    }
+
+    public void setId(long id)
+    {
+        this.news_id = id;
     }
 
     public void setContent(String new_content)

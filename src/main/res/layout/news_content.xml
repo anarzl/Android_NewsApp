@@ -4,6 +4,36 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <android.support.v7.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/toolbar"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right">
+
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/news_share"
+                android:src="@mipmap/share"
+                />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/news_favourite"
+                android:src="@mipmap/grey_heart"
+                android:layout_toRightOf="@+id/news_share"
+                />
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.Toolbar>
     <WebView
         android:id="@+id/news_webview"
         android:layout_width="match_parent"

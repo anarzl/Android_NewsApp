@@ -3,6 +3,10 @@ package com.ihandy.a2014011312;
 /**
  * Created by weixy on 2016/9/2.
  */
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -27,76 +31,119 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter
     public ArrayList<String> categoryKeyList = new ArrayList<>();
     private Handler handler = new Handler();
 
-    public ViewPagerAdapter(FragmentManager fm)
+    private SQLiteDatabase db;
+
+    public ViewPagerAdapter(FragmentManager fm,Context mContext)
     {
         super(fm);
-        Thread getJSONThread = new Thread(new Runnable()
+
+        db = DBHelper.getInstance(mContext);
+        boolean watchedIsEmpty = false;
+        boolean unwatchedIsEmpty = false;
+
+        Cursor c = db.query ("watched",null,null,null,null,null,null);
+        if(c.getCount() <= 0)
+            watchedIsEmpty = true;
+        c = db.query ("unwatched",null,null,null,null,null,null);
+        if(c.getCount() <= 0)
+            unwatchedIsEmpty = true;
+
+        if(watchedIsEmpty && unwatchedIsEmpty)
         {
-            @Override
-            public void run()
+
+            Thread getJSONThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    String body = "";
+                    try {
+                        long timeCurrent = System.currentTimeMillis();
+                        URL cs = new URL("http://assignment.crazz.cn/news/en/category?timestamp=" + timeCurrent);
+                        URLConnection tc = cs.openConnection();
+                        BufferedReader in = new BufferedReader(new InputStreamReader(tc.getInputStream()));
+                        String inputLine;
+                        while ((inputLine = in.readLine()) != null) {
+                            body += inputLine;
+                        }
+                        in.close();
+                    } catch (Exception e) {
+                        Log.d("netexpt", "cc");
+//                    categoryList.add("BUSINESS");
+//                    categoryList.add("ENTERTAINMENT");
+//                    categoryList.add("HEALTH");
+//                    categoryList.add("MORE TOP STORIES");
+//                    categoryList.add("INDIA");
+//                    categoryList.add("SCIENCE");
+//                    categoryList.add("SPORTS");
+//                    categoryList.add("TECHNOLOGY");
+//                    categoryList.add("TOP STORIES");
+//                    categoryList.add("WORLD");
+//                    categoryKeyList.add("business");
+//                    categoryKeyList.add("entertainment");
+//                    categoryKeyList.add("health");
+//                    categoryKeyList.add("more top stories");
+//                    categoryKeyList.add("national");
+//                    categoryKeyList.add("science");
+//                    categoryKeyList.add("sports");
+//                    categoryKeyList.add("technology");
+//                    categoryKeyList.add("top_stories");
+//                    categoryKeyList.add("world");
+
+
+                        e.printStackTrace();
+                    }
+                    try {
+                        JSONObject jsonObject = new JSONObject(body); //字符串转JSONObject, 但必须catch JSONException
+                        Log.d("fuck ", jsonObject.toString());
+
+                        JSONObject jsonObjectData = jsonObject.optJSONObject("data");
+                        Log.d("fuckdata ", jsonObjectData.toString());
+
+                        JSONObject jsonObjectCate = jsonObjectData.optJSONObject("categories");
+                        Log.d("fuckcate ", jsonObjectCate.toString());
+
+                        Iterator<String> it = jsonObjectCate.keys();
+
+                        while (it.hasNext()) {
+                            String tmp = (String) it.next();
+                            categoryKeyList.add(tmp);
+                            String tmp2 = jsonObjectCate.getString(tmp);
+                            categoryList.add(tmp2);
+                            //categoryList.add("Tab:"+i);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            getJSONThread.start();
+            try
             {
-                String body = "";
-                try
-                {
-                    long timeCurrent = System.currentTimeMillis();
-                    URL cs = new URL("http://assignment.crazz.cn/news/en/category?timestamp=" + timeCurrent);
-                    URLConnection tc = cs.openConnection();
-                    BufferedReader in = new BufferedReader(new InputStreamReader(tc.getInputStream()));
-                    String inputLine;
-                    while ((inputLine = in.readLine()) != null)
-                    {
-                        body += inputLine;
-                    }
-                    in.close();
-                }
-                catch (IOException e)
-                {
-                    categoryList.add("2");
-                    e.printStackTrace();
-                }
-                catch (Exception e)
-                {
-                    categoryList.add("1");
-                    e.printStackTrace();
-                }
-                try
-                {
-                    JSONObject jsonObject = new JSONObject(body); //字符串转JSONObject, 但必须catch JSONException
-                    Log.d("fuck ", jsonObject.toString());
-
-                    JSONObject jsonObjectData = jsonObject.optJSONObject("data");
-                    Log.d("fuckdata ", jsonObjectData.toString());
-
-                    JSONObject jsonObjectCate = jsonObjectData.optJSONObject("categories");
-                    Log.d("fuckcate ", jsonObjectCate.toString());
-
-                    Iterator<String> it = jsonObjectCate.keys();
-
-                    while(it.hasNext())
-                    {
-                        String tmp = (String)it.next();
-                        categoryKeyList.add(tmp);
-                        String tmp2 = jsonObjectCate.getString(tmp);
-                        categoryList.add(tmp2);
-                        //categoryList.add("Tab:"+i);
-                    }
-                }
-                catch (JSONException e)
-                {
-                    categoryList.add("3");
-                    e.printStackTrace();
-                }
+                getJSONThread.join();
             }
-        });
-        getJSONThread.start();
-        try
-        {
-            getJSONThread.join();
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            for(int i=0;i<categoryKeyList.size();i++)
+            {
+                ContentValues cValue = new ContentValues();
+
+                cValue.put("category",categoryKeyList.get(i));
+                cValue.put("categorytext",categoryList.get(i));
+
+                db.insert("watched",null,cValue);
+            }
         }
-        catch(Exception e)
+        else
         {
-            categoryList.add("5");
-            e.printStackTrace();
+            //categoryKeyList and categoryList设置为数据库中的值
+            c = db.query ("watched",null,null,null,null,null,null);
+            while(c.moveToNext())
+            {
+                categoryKeyList.add(c.getString(c.getColumnIndex("category")));
+                categoryList.add(c.getString(c.getColumnIndex("categorytext")));
+            }
+
         }
 //        categoryList.add("6");
 //        categoryList.add("tab7");

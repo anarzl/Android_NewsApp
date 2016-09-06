@@ -1,11 +1,13 @@
 package com.ihandy.a2014011312;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -22,22 +24,46 @@ public class MainActivity extends AppCompatActivity
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
+
+    private SQLiteDatabase db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        db = DBHelper.getInstance(this);
+
+        try
+        {
+            db.execSQL("CREATE TABLE IF NOT EXISTS watched(_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "category TEXT,categorytext TEXT)");
+        }
+        catch (Exception e)
+        {
+            Log.d("nani watched","fail");
+            e.printStackTrace();
+        }
+        try
+        {
+            db.execSQL("CREATE TABLE IF NOT EXISTS unwatched(_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "category TEXT,categorytext TEXT)");
+        }
+        catch (Exception e)
+        {
+            Log.d("nani unwatched","fail");
+            e.printStackTrace();
+        }
+
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         viewPager = (ViewPager) findViewById(R.id.view_pager);
 
-        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(),getBaseContext());
         viewPager.setAdapter(viewPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
-
-
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -63,6 +89,17 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
     }
 
+    protected void onResume()
+    {
+        super.onResume();
+
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(),getBaseContext());
+        viewPager.setAdapter(viewPagerAdapter);
+        tabLayout.setupWithViewPager(viewPager);
+        tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+    }
+
+
     @Override
     public void onBackPressed()
     {
@@ -78,30 +115,30 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings)
-        {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
+//    public boolean onCreateOptionsMenu(Menu menu)
+//    {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.main, menu);
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item)
+//    {
+//        // Handle action bar item clicks here. The action bar will
+//        // automatically handle clicks on the Home/Up button, so long
+//        // as you specify a parent activity in AndroidManifest.xml.
+//        int id = item.getItemId();
+//
+//        //noinspection SimplifiableIfStatement
+//        if (id == R.id.action_settings)
+//        {
+//            return true;
+//        }
+//
+//        return super.onOptionsItemSelected(item);
+//    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -110,30 +147,19 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_Favourite)
+        if (id == R.id.nav_favourite)
         {
-            // Handle the camera action
+            Intent intent = new Intent(getBaseContext(),FavouriteActivity.class);
+            startActivity(intent);
         }
-        else if (id == R.id.nav_gallery)
+        else if (id == R.id.nav_cm)
         {
-
-        }
-        else if (id == R.id.nav_slideshow)
-        {
-
-
-        }
-        else if (id == R.id.nav_manage)
-        {
-
-        }
-        else if (id == R.id.nav_share)
-        {
-
+            Intent intent = new Intent(getBaseContext(),CMActivity.class);
+            startActivity(intent);
         }
         else if (id == R.id.nav_about)
         {
-            Intent intent = new Intent(this,AboutActivity.class);
+            Intent intent = new Intent(getBaseContext(),AboutActivity.class);
             startActivity(intent);
         }
 
