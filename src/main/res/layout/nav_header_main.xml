@@ -24,7 +24,7 @@
         android:paddingTop="18dp"
         android:text="Wei Xiangyu"
         android:textStyle="bold"
-        android:textSize="18sp"
+        android:textSize="22sp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
     <TextView
@@ -32,8 +32,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="8dp"
-
-        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textSize="20sp"
         android:text="weixy14@163.com" />
 
 </LinearLayout>

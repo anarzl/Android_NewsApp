@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -24,9 +25,13 @@ public class CMActivity extends Activity
     private ListView cmListView;
     private CMAdapter cmAdapter;
 
+    private ImageButton backButton;
+
+    private ArrayList<String> tmpdatas= new ArrayList<String>();
+
     private int halving;
     private String[] datas = new String[20];
-    int dataloc = 0;
+    private int dataloc = 0;
 
     private SQLiteDatabase db;
 
@@ -58,7 +63,11 @@ public class CMActivity extends Activity
 
         cmListView = (ListView)findViewById(R.id.cm_listview);
 
-        cmAdapter = new CMAdapter(getBaseContext());
+        tmpdatas.clear();
+        for(int i=0;i<dataloc;i++)
+            tmpdatas.add(datas[i]);
+
+        cmAdapter = new CMAdapter(this,tmpdatas);
 
 
         cmListView.setOnItemClickListener(new ListView.OnItemClickListener()
@@ -134,11 +143,25 @@ public class CMActivity extends Activity
                     db.delete("unwatched","categorytext = ?", new String[]{tmp});
 
                 }
-                cmAdapter.notifyDataSetChanged();
-                finish();
-                Intent intent = new Intent(CMActivity.this, CMActivity.class);
-                startActivity(intent);
 
+                tmpdatas.clear();
+                for(int i=0;i<dataloc;i++)
+                    tmpdatas.add(datas[i]);
+
+                cmAdapter.notifyDataSetChanged();
+//                finish();
+//                Intent intent = new Intent(CMActivity.this, CMActivity.class);
+//                startActivity(intent);
+
+            }
+        });
+
+        backButton = (ImageButton)findViewById(R.id.cm_back);
+        //backButton.setImageDrawable(getBaseContext().getResources().getDrawable(R.mipmap.up));
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
 

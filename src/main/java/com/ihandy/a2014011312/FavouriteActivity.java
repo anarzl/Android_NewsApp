@@ -5,11 +5,13 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
@@ -24,6 +26,7 @@ public class FavouriteActivity extends Activity
 
     private SQLiteDatabase db;
     private ListView newslist;
+    private ImageButton backButton;
 //    private LinearLayout favouriteLinearLayout;
     private ArrayList<News> datas = new ArrayList<>();
 
@@ -78,6 +81,15 @@ public class FavouriteActivity extends Activity
         });
 
         favouriteLinearLayout.addView(newslist);
+
+        backButton = (ImageButton)findViewById(R.id.favourite_back);
+        //backButton.setImageDrawable(getBaseContext().getResources().getDrawable(R.mipmap.up));
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
     }
     protected void onResume()

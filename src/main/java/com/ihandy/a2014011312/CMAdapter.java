@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,30 +28,28 @@ public class CMAdapter extends BaseAdapter
 
     private SQLiteDatabase db;
 
-    public CMAdapter(Context mContext)
+    public CMAdapter(Context mContext,ArrayList<String> d)
     {
-        db = DBHelper.getInstance(mContext);
+//        db = DBHelper.getInstance(mContext);
+//
+//        datas.add("Watched");
+//        Cursor c1 = db.query ("watched",null,null,null,null,null,null);
+//        while(c1.moveToNext())
+//        {
+//            datas.add(c1.getString(c1.getColumnIndex("categorytext")));
+//        }
+//        datas.add("Unwatched");
+//        Cursor c2 = db.query ("unwatched",null,null,null,null,null,null);
+//        while(c2.moveToNext())
+//        {
+//            datas.add(c2.getString(c2.getColumnIndex("categorytext")));
+//        }
 
-        datas.add("Watched");
-        Cursor c1 = db.query ("watched",null,null,null,null,null,null);
-        while(c1.moveToNext())
-        {
-            datas.add(c1.getString(c1.getColumnIndex("categorytext")));
-        }
-        datas.add("Unwatched");
-        Cursor c2 = db.query ("unwatched",null,null,null,null,null,null);
-        while(c2.moveToNext())
-        {
-            datas.add(c2.getString(c2.getColumnIndex("categorytext")));
-        }
+//        halving = c1.getCount() + 1;
 
-        halving = c1.getCount() + 1;
-//        datas.add("1");
-//        datas.add("2");
-//        datas.add("3");
-//        datas.add("4");
-//        datas.add("555");
-//        datas.add("66666");
+
+        datas = d;
+        halving = datas.indexOf("Unwatched");
         this.mContext = mContext;
 
     }
@@ -76,7 +75,11 @@ public class CMAdapter extends BaseAdapter
     @Override
     public View getView(int position, View convertView, ViewGroup parent)
     {
+        halving = datas.indexOf("Unwatched");
+        Log.d("cma getview ",halving+" "+datas.get(position));
+
         ViewHolder viewHolder;
+
         if(convertView == null)
         {
             convertView = LayoutInflater.from(mContext).inflate(R.layout.catogary_item,parent,false);
@@ -90,32 +93,32 @@ public class CMAdapter extends BaseAdapter
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
+        viewHolder.category_title.setText(datas.get(position));
+
         if(position == 0)
         {
-            viewHolder.category_title.setText(datas.get(position));
             viewHolder.category_title.setTextColor(Color.rgb(255, 0, 0));
- //           viewHolder.arrow_pic.setVisibility(View.INVISIBLE);
+            viewHolder.arrow_pic.setVisibility(View.INVISIBLE);
+        }
+        else if(position > 0 && position < halving)
+        {
+            viewHolder.category_title.setTextColor(Color.rgb(0, 0, 0));
+            viewHolder.arrow_pic.setImageDrawable(mContext.getResources().getDrawable(R.mipmap.down));
+            viewHolder.arrow_pic.setVisibility(View.VISIBLE);
         }
         else if(position == halving)
         {
-            viewHolder.category_title.setText(datas.get(position));
             viewHolder.category_title.setTextColor(Color.rgb(255, 0, 0));
- //           viewHolder.arrow_pic.setVisibility(View.INVISIBLE);
+            viewHolder.arrow_pic.setVisibility(View.INVISIBLE);
         }
-        else
+        else if(position > halving)
         {
-            if(position < halving)
-            {
-                viewHolder.category_title.setText(datas.get(position));
-                viewHolder.arrow_pic.setImageDrawable(mContext.getResources().getDrawable(R.mipmap.down));
-            }
-            else
-            {
-                viewHolder.category_title.setText(datas.get(position));
-                viewHolder.arrow_pic.setImageDrawable(mContext.getResources().getDrawable(R.mipmap.up));
-            }
-
+            viewHolder.category_title.setTextColor(Color.rgb(0, 0, 0));
+            viewHolder.arrow_pic.setImageDrawable(mContext.getResources().getDrawable(R.mipmap.up));
+            viewHolder.arrow_pic.setVisibility(View.VISIBLE);
         }
+
+
         return convertView;
     }
 

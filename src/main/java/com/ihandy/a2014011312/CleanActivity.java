@@ -16,6 +16,7 @@ public class CleanActivity extends Activity
 {
     private Intent intent;
     private ImageButton cleanButton;
+    private ImageButton backButton;
     private SQLiteDatabase db;
 
     private Toast t;
@@ -38,6 +39,7 @@ public class CleanActivity extends Activity
 //        t.setText("缓存已清除");
 
         cleanButton = (ImageButton)findViewById(R.id.clean_button);
+        cleanButton.setImageDrawable(getBaseContext().getResources().getDrawable(R.mipmap.recycle));
         cleanButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
@@ -48,7 +50,14 @@ public class CleanActivity extends Activity
              //   finish();
             }
         });
-
+        backButton = (ImageButton)findViewById(R.id.clean_back);
+        //backButton.setImageDrawable(getBaseContext().getResources().getDrawable(R.mipmap.up));
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
     }
 }

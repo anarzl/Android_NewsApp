@@ -10,6 +10,7 @@ import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 /**
  * Created by weixy on 2016/9/4.
@@ -22,7 +23,9 @@ public class NewsActivity extends Activity
 
     private ImageButton favouriteButton;
     private ImageButton shareButton;
+    private  ImageButton backButton;
     private WebView wb;
+    private TextView tb;
 
     boolean isFavourite;
 
@@ -43,6 +46,13 @@ public class NewsActivity extends Activity
 
         favouriteButton = (ImageButton)findViewById(R.id.news_favourite);
         shareButton = (ImageButton)findViewById(R.id.news_share);
+        backButton = (ImageButton)findViewById(R.id.news_back);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         db = DBHelper.getInstance(this);
 
@@ -70,6 +80,7 @@ public class NewsActivity extends Activity
                 {
                     isFavourite = !isFavourite;
                     favouriteButton.setImageDrawable(getResources().getDrawable(R.mipmap.red_heart));
+                    //favouriteButton.setBackground(getResources().getDrawable(R.color.no));
                     ContentValues cValue = new ContentValues();
 
                     cValue.put("news_title",thisNews.getTitle());
@@ -94,6 +105,21 @@ public class NewsActivity extends Activity
         });
 
 
+        shareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                Intent shareIntent = new Intent();
+                shareIntent.setAction(Intent.ACTION_SEND);
+                String shareinfo = thisNews.getTitle() + "\n\nImage : " + thisNews.getImageUrl() + "\n\nURL : " + thisNews.getContent() + "\n\nFrom WeiXiangyu's News App";
+                shareIntent.putExtra(Intent.EXTRA_TEXT,shareinfo);
+                shareIntent.setType("text/plain");
+                startActivity(Intent.createChooser(shareIntent,"Share"));
+
+            }
+        });
+
+
 
 //        ContentValues cValue = new ContentValues();
 //
@@ -108,13 +134,22 @@ public class NewsActivity extends Activity
 
         wb = (WebView)findViewById(R.id.news_webview);
 
-        wb.setWebViewClient(new WebViewClient(){
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                view.loadUrl(url);
-                return true;
-            }
-        });
-        wb.loadUrl(newsUrl);
+        if(newsUrl != null)
+        {
+
+            wb.setWebViewClient(new WebViewClient() {
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                    view.loadUrl(url);
+                    return true;
+                }
+            });
+            wb.loadUrl(newsUrl);
+        }
+        else
+        {
+            tb = (TextView)findViewById(R.id.inv_url);
+            tb.setVisibility(View.VISIBLE);
+        }
     }
 }

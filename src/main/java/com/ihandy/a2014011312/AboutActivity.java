@@ -21,6 +21,7 @@ public class AboutActivity extends Activity
         intent = getIntent();
 
         backButton = (ImageButton)findViewById(R.id.aboutme_back);
+        //backButton.setImageDrawable(getBaseContext().getResources().getDrawable(R.mipmap.up));
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

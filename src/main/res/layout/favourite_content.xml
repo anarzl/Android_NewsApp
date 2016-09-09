@@ -7,17 +7,24 @@
     <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/lightgreen">
+        android:background="@color/colorPrimary">
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/favourite_back"
+            android:background="#00000000"
+            android:src="@mipmap/backb" />
 
         <TextView
             android:id="@+id/favourite_title"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:textSize="24sp"
+            android:gravity="left"
+            android:textSize="23sp"
             android:textStyle="bold"
             android:textColor="@color/white"
-            android:text="My Favourite News" >
+            android:text="    My Favourite News" >
         </TextView>
 
     </android.support.v7.widget.Toolbar>
